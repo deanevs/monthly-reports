@@ -2,12 +2,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-import config
+import settings
 import helper
 
 
 def do_overviews(assets, mth, keys):
-
     # create a dataframe for plotting trends
     df_stats = create_df(assets, mth, keys)
 
@@ -76,21 +75,23 @@ def create_df(df_assets, mth, keys):
 
     return stats
 
+
 def create_hist(data, title, legend, out_filename):
-    data.plot.bar(figsize=(20,12))
+    data.plot.bar(figsize=(20, 12))
 
     plt.legend = legend
     plt.title = title
 
-    plt.savefig((config.output / out_filename))
+    plt.savefig((settings.output / out_filename))
     print(f"Saved {out_filename}")
 
-    if config.show_chart:
+    if settings.show_chart:
         plt.show()
 
     plt.cla()
     plt.clf()
     plt.close()
+
 
 def create_trend(data, title, legend, out_filename):
     fig, ax = plt.subplots(figsize=(20, 12))
@@ -112,10 +113,10 @@ def create_trend(data, title, legend, out_filename):
 
     ax.legend()
 
-    fig.savefig((config.output / out_filename))
+    fig.savefig((settings.output / out_filename))
     print(f"Saved {out_filename}")
 
-    if config.show_chart:
+    if settings.show_chart:
         plt.show()
 
     plt.cla()

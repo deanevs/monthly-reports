@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-import config
+import settings
 import helper
 
 
@@ -37,9 +37,9 @@ def calc_time_to_repair(mth, keys, corr, title, out_filename):
 
     df_penalties.Penalty.value_counts().plot(kind='bar', figsize=(12, 8), title=title, ylabel='£', fontsize=16)
 
-    plt.savefig((config.output / out_filename))
+    plt.savefig((settings.output / out_filename))
 
-    if config.show_chart:
+    if settings.show_chart:
         plt.show()
 
     plt.close()

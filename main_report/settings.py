@@ -1,4 +1,7 @@
+from decouple import config
 from pathlib import Path
+
+smartsheet_token = config('smartsheet_token')
 
 use_round = False
 show_chart = True
@@ -10,16 +13,10 @@ do_availability = False
 do_time_to_repair = False
 do_acceptance = False
 
-# do_overviews = True
-# do_pm_charts = False
-# do_pm_trends = False
-# do_availability = False
-# do_time_to_repair = False
-# do_acceptance = False
 
-CORRECTIVE2022 = 3688015278172036
-CORRECTIVE2021 = 8724192964175748
-CORRECTIVE2023 = 6231218938242948
+CORRECTIVE2022 = config('CORRECTIVE2022')
+CORRECTIVE2021 = config('CORRECTIVE2021')
+CORRECTIVE2023 = config('CORRECTIVE2023')
 
 # declare all constants and lookups
 RISKS = ['HIGH', 'MEDIUM', 'LOW']

@@ -3,8 +3,7 @@ import datetime
 from pandas.tseries.offsets import MonthEnd
 from interface import ss_interface
 
-import config_secret
-import config
+import settings
 import charting
 import availability
 import time_to_repair
@@ -20,18 +19,18 @@ connect_ss = False
 
 def main():
     # load dataframes
-    if config.do_availability or config.do_time_to_repair or 1:
+    if settings.do_availability or settings.do_time_to_repair or 1:
         print('Loading correctives ...')
         if connect_ss:
-            corr22 = ss_interface.Sheet(config_secret.smartsheet_token, config.CORRECTIVE2022).get_df()
+            corr22 = ss_interface.Sheet(settings.smartsheet_token, settings.CORRECTIVE2022).get_df()
             corr22['WO Number'] = corr22['WO Number'].astype(int)
-            corr23 = ss_interface.Sheet(config_secret.smartsheet_token, config.CORRECTIVE2023).get_df()
+            corr23 = ss_interface.Sheet(settings.smartsheet_token, settings.CORRECTIVE2023).get_df()
             corr23['WO Number'] = corr23['WO Number'].astype(int)
             corr = pd.concat([corr22, corr23])
-            corr.to_excel((config.wdir / 'correctives.xlsx'), index=False)
+            corr.to_excel((settings.wdir / 'correctives.xlsx'), index=False)
             del corr22, corr23
         else:
-            corr = pd.read_excel((config.wdir / 'correctives.xlsx'))
+            corr = pd.read_excel((settings.wdir / 'correctives.xlsx'))
 
         print(corr.head())
 
@@ -71,7 +70,7 @@ def main():
 
     # main assets
     print('Loading assets i.e. how they are now! ....')
-    assets = pd.read_csv((config.wdir / 'INFOASSETSRETIREDAFTER2015.csv'))
+    assets = pd.read_csv((settings.wdir / 'INFOASSETSRETIREDAFTER2015.csv'))
     assets = assets.fillna('')
     assets.risk = assets.risk.apply(convert_risk)
     assets.asset_id = assets.asset_id.astype(str)
@@ -90,7 +89,7 @@ def main():
 
     # monthly data grab
     print("Loading monthly-pm-status ...")
-    mth = pd.read_csv((config.wdir / 'monthly_pm_status.csv'))
+    mth = pd.read_csv((settings.wdir / 'monthly_pm_status.csv'))
     mth = mth[mth.tech_dept != 'ASSET ONLY'].copy()  # this stopped from Nov22
     mth['month_end'] = pd.to_datetime(mth.collected) + MonthEnd(0)
     mth.drop(columns=['status_cnl', 'tech_dept'], inplace=True)
@@ -127,29 +126,29 @@ def main():
     print('\n')
 
     # create the main output excel file
-    dest_filename = config.output / (
-                datetime.datetime.today().date().strftime("%Y-%m-%d") + ' - Monthly Report Data.xlsx')
+    dest_filename = settings.output / (
+            datetime.datetime.today().date().strftime("%Y-%m-%d") + ' - Monthly Report Data.xlsx')
     last_mth.to_excel(dest_filename, index=False, header=True, engine='xlsxwriter', sheet_name='All Data')
 
     print(f"Saved last_mth to {dest_filename}")
 
-    if config.do_overviews:
+    if settings.do_overviews:
         result = overviews.do_overviews(assets, mth, keys)
         print(result)
 
-    if config.do_pm_charts:
+    if settings.do_pm_charts:
         charting.do_pm_compliance(last_mth, keys, dest_filename)
 
-    if config.do_pm_trends:
+    if settings.do_pm_trends:
         charting.do_pm_trends(merged)
 
-    if config.do_availability:
+    if settings.do_availability:
         availability.do_availability(merged, keys, corr, dest_filename)
 
-    if config.do_time_to_repair:
+    if settings.do_time_to_repair:
         time_to_repair.do_time_to_repair(mth, keys, corr, dest_filename)
 
-    if config.do_acceptance:
+    if settings.do_acceptance:
         acceptance.do_acceptance(assets, dest_filename)
 
 

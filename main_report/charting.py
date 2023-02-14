@@ -3,7 +3,7 @@ import numpy as np
 # import matplotlib.pyplot as plt
 from matplotlib import pyplot as plt
 
-import config
+import settings
 import helper
 
 # list to store return dictionary from pm calcs

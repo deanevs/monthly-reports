@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import analysis.workdays2 as wd2
 import pandas as pd
-import config
+import settings
 import helper
 
 HOURS_PER_WORKDAY = 10
