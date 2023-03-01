@@ -1,8 +1,12 @@
 import matplotlib.pyplot as plt
-import analysis.workdays2 as wd2
+
 import pandas as pd
 import settings
 import helper
+import sys
+
+sys.path.insert(0, 'C:\\Users\\212628255\\PycharmProjects\\interfaces\\WorkDays')
+import workdays as wds
 
 HOURS_PER_WORKDAY = 10
 MINS_PER_HOUR = 60
@@ -45,8 +49,8 @@ def _availability_formulae(downtime, asset_cnt, month_days):
 
 
 def _calc_gmdn_availability(gmdn_list, merged, corr, keys, out_filename, no_months=12):
-    stats_list = [] # empty list to hold dicts results for each month
-    wd = wd2.workdays()
+    stats_list = []  # empty list to hold dicts results for each month
+    wd = wds.Workdays()
 
     for n in range(len(keys) - 1):
         if n >= no_months:
@@ -74,9 +78,9 @@ def _calc_gmdn_availability(gmdn_list, merged, corr, keys, out_filename, no_mont
             gmdn_cnt = int(len(df_gmdn))
 
             df_sd = pd.merge(df_gmdn, curr_corr, how='inner', left_on='n_imma', right_on='Asset ID')
-            df_sd.drop(columns=['n_imma', 'status_std', 'month_end', 'md', 'origin', 'name', 'serial','price',
-                                'replacement','tech_dept','contract','eol','last_wo','division','retired',
-                                'retire_reason','received','po','Asset ID','Contract'], inplace=True)
+            df_sd.drop(columns=['n_imma', 'status_std', 'month_end', 'md', 'origin', 'name', 'serial', 'price',
+                                'replacement', 'tech_dept', 'contract', 'eol', 'last_wo', 'division', 'retired',
+                                'retire_reason', 'received', 'po', 'Asset ID', 'Contract'], inplace=True)
 
             if len(df_sd[df_sd['System Down (Days)'] > 0]) > 0:
                 print(df_sd[df_sd['System Down (Days)'] > 0].sort_values('System Down (Days)', ascending=False))
@@ -106,10 +110,10 @@ def _calc_gmdn_availability(gmdn_list, merged, corr, keys, out_filename, no_mont
     plt.axhline(y=96, color='red', linestyle='dashed', linewidth=2.0)
     plt.axhline(y=98, color='orange', linestyle='dashed', linewidth=2.0)
 
-    plt.savefig((config.output / out_filename))
+    plt.savefig((settings.output / out_filename))
     print(f'Saved {out_filename}')
 
-    if config.show_chart:
+    if settings.show_chart:
         plt.show()
 
     plt.cla()
@@ -122,7 +126,7 @@ def _calc_gmdn_availability(gmdn_list, merged, corr, keys, out_filename, no_mont
 def _calc_availability_fully_comp(merged, keys, corr, out_filename, title, no_months=12):
     # stores dict values from each month to create dataframe
     rows_list = []
-    wd = wd2.workdays()
+    wd = wds.Workdays()
 
     # iterate through each month
     for x in range(len(keys) - 1):
@@ -151,7 +155,7 @@ def _calc_availability_fully_comp(merged, keys, corr, out_filename, title, no_mo
         imaging_cnt = 0
         biomed_cnt = 0
         for k, v in tech_dept.items():
-            if k in config.IMAGING:
+            if k in settings.IMAGING:
                 imaging_cnt += v
             else:
                 biomed_cnt += v
@@ -167,7 +171,7 @@ def _calc_availability_fully_comp(merged, keys, corr, out_filename, title, no_mo
                             'replacement', 'tech_dept', 'contract', 'eol', 'last_wo', 'division', 'retired',
                             'retire_reason', 'received', 'po', 'Asset ID', 'Contract'], inplace=True)
 
-        imaging = df_sd[(df_sd['Tech Dept (WO)'].isin(config.IMAGING)) &
+        imaging = df_sd[(df_sd['Tech Dept (WO)'].isin(settings.IMAGING)) &
                                                  (df_sd.month_end_corr.dt.year == year) &
                                                  (df_sd.month_end_corr.dt.month == month)]
 
@@ -178,13 +182,13 @@ def _calc_availability_fully_comp(merged, keys, corr, out_filename, title, no_mo
         avail_imaging = round(_availability_formulae(img_sd_days, imaging_cnt, month_days), 2)
 
         # GE BIOMED FULLY COMP
-        # bio_sd_days = round(corr[((corr['Tech Dept (Now)'].isin(config.BIOMED)) &
+        # bio_sd_days = round(corr[((corr['Tech Dept (Now)'].isin(settings.BIOMED)) &
         #                               (corr['Job End Month'] == legend) &
         #                               corr['Contract'].str.contains('MMS FULLY COMP', na=False, regex=False))][
         #                             'System Down (Days)'].sum(), 2)
 
 
-        biomed = df_sd[(df_sd['Tech Dept (WO)'].isin(config.BIOMED)) &
+        biomed = df_sd[(df_sd['Tech Dept (WO)'].isin(settings.BIOMED)) &
                                                  (df_sd.month_end_corr.dt.year == year) &
                                                  (df_sd.month_end_corr.dt.month == month)]
 
@@ -216,10 +220,10 @@ def _calc_availability_fully_comp(merged, keys, corr, out_filename, title, no_mo
     plt.axhline(y=96, color='red', linestyle='dashed', linewidth=2.0)
     plt.axhline(y=98, color='orange', linestyle='dashed', linewidth=2.0)
 
-    plt.savefig((config.output / out_filename))
+    plt.savefig((settings.output / out_filename))
     print(f'Saved {out_filename}')
 
-    if config.show_chart:
+    if settings.show_chart:
         plt.show()
 
     plt.cla()

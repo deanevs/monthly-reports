@@ -8,6 +8,7 @@ import helper
 
 # list to store return dictionary from pm calcs
 
+
 def report_columns(data):
     """Report formatter"""
     df = data[data.status_std == 'OUT OF DATE'].sort_values(['next_pm', 'last_pm', 'install'], ascending=True)
@@ -26,6 +27,7 @@ def report_columns(data):
                        'status_std':'Status'})
     return df
 
+
 def do_pm_compliance(merged, keys, dest_filename):
     """
     Called from main program and does all the charting
@@ -40,7 +42,7 @@ def do_pm_compliance(merged, keys, dest_filename):
     with pd.ExcelWriter(dest_filename, mode="a", engine='openpyxl') as writer:  #
 
         # create pm charts
-        data = merged[(merged.contract.isin(config.GE_CONTRACTS))]          # contract
+        data = merged[(merged.contract.isin(settings.GE_CONTRACTS))]          # contract
         filename = helper.set_filename('PM_COMPLIANCE_GE_CONTRACTS')
         title =  'GE CONTRACTS'
         result = calc_single_chart(data, keys, title, filename)
@@ -48,7 +50,7 @@ def do_pm_compliance(merged, keys, dest_filename):
         lates = report_columns(data)
         lates.to_excel(writer, sheet_name=title, index=False)
 
-        data = merged[(merged.contract.isin(config.TRUST_CONTRACTS))]       # contract
+        data = merged[(merged.contract.isin(settings.TRUST_CONTRACTS))]       # contract
         filename = helper.set_filename('PM_COMPLIANCE_TRUST_CONTRACTS')
         title = 'TRUST CONTRACTS'
         result = calc_single_chart(data, keys, title, filename)
@@ -64,7 +66,7 @@ def do_pm_compliance(merged, keys, dest_filename):
         lates = report_columns(data)
         lates.to_excel(writer, sheet_name=title, index=False)
 
-        data = merged[(merged.tech_dept.isin(config.IMAGING))]
+        data = merged[(merged.tech_dept.isin(settings.IMAGING))]
         filename = helper.set_filename('PM_COMPLIANCE_GE_IMAGING')
         title = 'GE IMAGING'
         result = calc_single_chart(data, keys, title, filename)
@@ -72,7 +74,7 @@ def do_pm_compliance(merged, keys, dest_filename):
         lates = report_columns(data)
         lates.to_excel(writer, sheet_name=title, index=False)
 
-        data = merged[(merged.tech_dept.isin(config.BIOMED))]
+        data = merged[(merged.tech_dept.isin(settings.BIOMED))]
         filename = helper.set_filename('PM_COMPLIANCE_GE_BIOMED')
         title = 'GE BIOMED'
         result = calc_single_chart(data, keys, title, filename)
@@ -80,7 +82,7 @@ def do_pm_compliance(merged, keys, dest_filename):
         lates = report_columns(data)
         lates.to_excel(writer, sheet_name=title, index=False)
 
-        data = merged[(merged.tech_dept.isin(config.GE_OTHER))]
+        data = merged[(merged.tech_dept.isin(settings.GE_OTHER))]
         filename = helper.set_filename('PM_COMPLIANCE_GE_OTHER')
         title = 'GE OTHER'
         result = calc_single_chart(data, keys, title, filename)
@@ -88,7 +90,7 @@ def do_pm_compliance(merged, keys, dest_filename):
         lates = report_columns(data)
         lates.to_excel(writer, sheet_name=title, index=False)
 
-        data = merged[(merged.tech_dept.isin(config.CLINICAL_ENG))]
+        data = merged[(merged.tech_dept.isin(settings.CLINICAL_ENG))]
         filename = helper.set_filename('PM_COMPLIANCE_CLINICAL_ENG')
         title = 'CLINICAL ENG'
         result = calc_single_chart(data, keys, title, filename)
@@ -96,7 +98,7 @@ def do_pm_compliance(merged, keys, dest_filename):
         lates = report_columns(data)
         lates.to_excel(writer, sheet_name=title, index=False)
 
-        data = merged[(merged.tech_dept.isin(config.TRUST))]
+        data = merged[(merged.tech_dept.isin(settings.TRUST))]
         filename = helper.set_filename('PM_COMPLIANCE_TRUST')
         title = 'TRUST'
         result = calc_single_chart(data, keys, title, filename)
@@ -104,7 +106,7 @@ def do_pm_compliance(merged, keys, dest_filename):
         lates = report_columns(data)
         lates.to_excel(writer, sheet_name=title, index=False)
 
-        data = merged[(merged.tech_dept.isin(config.TBC))]
+        data = merged[(merged.tech_dept.isin(settings.TBC))]
         filename = helper.set_filename('PM_COMPLIANCE_TECH_DEPT_TBC')
         title = 'TECH DEPT TBC'
         result = calc_single_chart(data, keys, title, filename)
@@ -112,7 +114,7 @@ def do_pm_compliance(merged, keys, dest_filename):
         lates = report_columns(data)
         lates.to_excel(writer, sheet_name=title, index=False)
 
-        data = merged[(merged.tech_dept.isin(config.ON_DEMAND_PAYG))]
+        data = merged[(merged.tech_dept.isin(settings.ON_DEMAND_PAYG))]
         filename = helper.set_filename('PM_COMPLIANCE_ON_DEMAND_PAYG')
         title = 'ON DEMAND PAYG'
         result = calc_single_chart(data, keys, title, filename)
@@ -137,7 +139,7 @@ def do_pm_compliance(merged, keys, dest_filename):
 def do_pm_trends(merged):
 
         # GE TECH DEPTS
-        GE_TECH_DEPTS = config.IMAGING + config.BIOMED
+        GE_TECH_DEPTS = settings.IMAGING + settings.BIOMED
 
         filters = {  # 'ALL RISKS':merged_all.tech_dept.isin(GE_TECH_DEPTS),
             'HIGH': (merged.tech_dept.isin(GE_TECH_DEPTS)) & (merged.risk == 'HIGH'),
@@ -151,9 +153,9 @@ def do_pm_trends(merged):
 
         # TRUST TECH DEPTS
         filters = {  # 'ALL RISKS':merged_all.tech_dept.isin(GE_TECH_DEPTS),
-            'HIGH': (merged.tech_dept.isin(config.TRUST)) & (merged.risk == 'HIGH'),
-            'MEDIUM': (merged.tech_dept.isin(config.TRUST)) & (merged.risk == 'MEDIUM'),
-            'LOW': (merged.tech_dept.isin(config.TRUST)) & (merged.risk == 'LOW')
+            'HIGH': (merged.tech_dept.isin(settings.TRUST)) & (merged.risk == 'HIGH'),
+            'MEDIUM': (merged.tech_dept.isin(settings.TRUST)) & (merged.risk == 'MEDIUM'),
+            'LOW': (merged.tech_dept.isin(settings.TRUST)) & (merged.risk == 'LOW')
         }
         title = "TRUST - PM COMPLIANCE TRENDS"
         filename = helper.set_filename('PM_TREND_TRUST')
@@ -181,7 +183,7 @@ def do_chart(df_prop, df):
     for n, x in enumerate([*df.index.values]):
         for (proportion, count, y_loc) in zip(df_prop.loc[x], df.loc[x], df_prop.loc[x].cumsum()):
             try:
-                if config.use_round:
+                if settings.use_round:
                     proportion_calc = f'{count}\n({np.round(proportion * 100, 1)}%)'
                 else:
                     proportion_calc = f'{count}\n{int(np.round(proportion * 100, 0))}%'
@@ -202,10 +204,10 @@ def calc_single_chart(data, keys, title, out_filename):
 
     cross_tab_prop = pd.crosstab(index=data['risk'],
                                  columns=data['status_std'],
-                                 normalize="index").reindex(config.risk_order)
+                                 normalize="index").reindex(settings.risk_order)
 
     cross_tab = pd.crosstab(index=data['risk'],
-                            columns=data['status_std']).reindex(config.risk_order)
+                            columns=data['status_std']).reindex(settings.risk_order)
 
     cross_tab_prop.plot(kind='barh',
                         stacked=True,
@@ -220,10 +222,10 @@ def calc_single_chart(data, keys, title, out_filename):
     plt.title(title)
     plt.legend(loc="lower left", ncol=2)
 
-    plt.savefig((config.output / out_filename))
+    plt.savefig((settings.output / out_filename))
     print(f"Saved {out_filename}")
 
-    if config.show_chart:
+    if settings.show_chart:
         plt.show()
 
     plt.close()
@@ -249,12 +251,12 @@ def calc_division(data, keys, title, out_filename):
     # set number of columns (use 3 to demonstrate the change)
     ncols = 3
     # calculate number of rows
-    nrows = len(config.DIVISIONS) // ncols + (len(config.DIVISIONS) % ncols > 0)
+    nrows = len(settings.DIVISIONS) // ncols + (len(settings.DIVISIONS) % ncols > 0)
 
     temp_results_list = []
 
     # loop through the length of tickers and keep track of index
-    for n, div in enumerate(config.DIVISIONS):
+    for n, div in enumerate(settings.DIVISIONS):
         # add a new subplot iteratively using nrows and cols
         ax = plt.subplot(nrows, ncols, n + 1)
 
@@ -264,10 +266,10 @@ def calc_division(data, keys, title, out_filename):
 
         cross_tab_prop = pd.crosstab(index=df['risk'],
                                      columns=df['status_std'],
-                                     normalize="index").reindex(config.risk_order)
+                                     normalize="index").reindex(settings.risk_order)
 
         cross_tab = pd.crosstab(index=df['risk'],
-                                columns=df['status_std']).reindex(config.risk_order)
+                                columns=df['status_std']).reindex(settings.risk_order)
 
         cross_tab_prop.plot(kind='barh',
                             ax=ax,
@@ -294,9 +296,9 @@ def calc_division(data, keys, title, out_filename):
 
         temp_results_list.append(dict_temp)
 
-    plt.savefig((config.output / out_filename))
+    plt.savefig((settings.output / out_filename))
     print(f"Saved {out_filename}")
-    if config.show_chart:
+    if settings.show_chart:
         plt.show()
     plt.clf()
     plt.close()
@@ -331,9 +333,9 @@ def calc_trend(data, filters, title, out_filename):
     plt.title(title)
     plt.legend(loc="lower left", ncol=2)
 
-    plt.savefig((config.output / out_filename))
+    plt.savefig((settings.output / out_filename))
 
-    if config.show_chart:
+    if settings.show_chart:
         plt.show()
 
     plt.clf()

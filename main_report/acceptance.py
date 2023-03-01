@@ -49,7 +49,7 @@ def calc_spec(x):
 
 def get_accept(df_assets, mth_num=0):
     # create dataframe
-    wo = pd.read_csv((config.wdir / 'acceptance.csv'))
+    wo = pd.read_csv((settings.wdir / 'acceptance.csv'))
     wo.drop(columns=['serial', 'model', 'manufacturer', 'gmdn_no', 'equip', 'dept', 'site'], inplace=True)
     wo.end_date = pd.to_datetime(wo.end_date)
     wo['month'] = wo.end_date.dt.month
@@ -114,14 +114,14 @@ def calc_bins(merged, title, out_filename):
             col.append('olivedrab')
         elif val == '4-7':
             col.append('yellowgreen')
-        elif val == 'Error':
-            col.append('saddlebrown')
         elif val == '8-11':
             col.append('lightcoral')
         elif val == '12-15':
             col.append('firebrick')
         elif val == '>15':
             col.append('darkred')
+        else: # val == 'Error':
+            col.append('saddlebrown')
 
     # Figure Size
     fig, ax = plt.subplots(figsize=(20, 12))
@@ -145,8 +145,8 @@ def calc_bins(merged, title, out_filename):
     ax.grid(visible=True,
             color='grey',
             linestyle='-.',
-            linewidth=0.5,
-            alpha=0.8)
+            linewidth=0.5)
+            # alpha=0.8)
 
     # Show top values
     # ax.invert_yaxis()
@@ -165,11 +165,11 @@ def calc_bins(merged, title, out_filename):
     ax.set_ylabel('No. Commissioned Assets', fontsize=15)
     ax.tick_params(axis='both', labelsize=15)
 
-    fig.savefig((config.output / out_filename))
+    fig.savefig((settings.output / out_filename))
     print(f"Saved {out_filename}")
 
     # Show Plot
-    if config.show_chart:
+    if settings.show_chart:
         plt.show()
 
 
@@ -211,7 +211,7 @@ def calc_acceptance(merged, title, out_filename):
 
     # allow for no errors
     if len(data_labels) == 3:
-        explode = (0.0, 0.1, 0.15)
+        explode = (0.0, 0.05, 0.0)      # (0.0, 0.1, 0.15)
         colors = ['darkkhaki', 'yellowgreen', 'lightcoral']  # error, good, bad
     elif len(data_labels) == 2:
         explode = (0.02, 0.05)
@@ -224,7 +224,7 @@ def calc_acceptance(merged, title, out_filename):
                                       startangle=90,
                                       shadow=False,
                                       labels=data_labels,
-                                      labeldistance=1.2,  # 1.05
+                                      labeldistance=1.05,  # 1.05 1.2
                                       textprops={'fontsize': 12},   # 20
                                       colors=colors,
                                       explode=explode,
@@ -243,9 +243,9 @@ def calc_acceptance(merged, title, out_filename):
 
     plt.setp(autotexts, size=15, color='black', weight="bold")  # 20
 
-    fig.savefig((config.output / out_filename))
+    fig.savefig((settings.output / out_filename))
 
-    if config.show_chart:
+    if settings.show_chart:
         plt.show()
 
     plt.close()

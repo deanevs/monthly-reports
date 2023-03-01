@@ -7,15 +7,18 @@ use_round = False
 show_chart = True
 
 do_overviews = False
-do_pm_charts = False
-do_pm_trends = False
-do_availability = False
-do_time_to_repair = False
-do_acceptance = False
+do_pm_charts = True
+do_pm_trends = True
+do_availability = True
+do_time_to_repair = True
+do_acceptance = True
 
+# load paths and files and create dataframes
+wdir = Path(r'C:\Users\212628255\Documents\2 GE\AssetPlus\Monthly Reports\new downloads')
+output = Path(r'C:\Users\212628255\Documents\2 GE\AssetPlus\Monthly Reports\output')
 
-CORRECTIVE2022 = config('CORRECTIVE2022')
 CORRECTIVE2021 = config('CORRECTIVE2021')
+CORRECTIVE2022 = config('CORRECTIVE2022')
 CORRECTIVE2023 = config('CORRECTIVE2023')
 
 # declare all constants and lookups
@@ -26,8 +29,7 @@ risk_order = ['LOW', 'MEDIUM', 'HIGH']
 # CONTRACT GROUPS 2
 GE_CONTRACTS = ['MMS PM ONLY 20-25', 'MMS FULLY COMP 20-25', 'MMS OUT 20-25']
 TRUST_CONTRACTS = ['OLYMPUS-2021', 'HOISTS', 'PENTAX', 'SPACELABS', 'MIS HEALTHCARE 2021', '3M HEALTH',
-                   'TRUST - PCA PUMPS',
-                   'MEDTRONIC/13']
+                   'TRUST - PCA PUMPS', 'MEDTRONIC/13']
 
 # TECH DEPTS GROUPS 3
 IMAGING = ['GE MVS DI', 'GE MVS ULS', 'GE ULS', 'GE DI']
@@ -48,6 +50,4 @@ DIVISIONS = ['WOMEN\'S, CHILDREN\'S & CLINICAL SUPPORT', 'MEDICINE & INTEGRATED 
 
 # CORPORATE = ['NURSING, ESTATES & FACILITIES', 'RESEARCH & DEVELOPMENT', 'CORPORATE']
 
-# load paths and files and create dataframes
-wdir = Path(r'C:\Users\212628255\Documents\2 GE\AssetPlus\Monthly Reports\new downloads')
-output = Path(r'C:\Users\212628255\Documents\2 GE\AssetPlus\Monthly Reports\output')
+
