@@ -13,6 +13,7 @@ wdire = Path(r'C:\Users\212628255\Documents\2 GE\AssetPlus\Monthly Reports\new d
 output = Path(r'C:\Users\212628255\Documents\2 GE\AssetPlus\Monthly Reports\Contract Changes')
 assets = pd.read_csv((wdire / 'INFOASSETSRETIREDAFTER2015.csv'))  # , parse_dates=True)
 mth = pd.read_csv((wdire / 'monthly_pm_status.csv'))  # ,parse_dates=True)
+mth.drop(columns=['DELTA'], inplace=True)
 
 mth.collected = pd.to_datetime(mth.collected)
 grp = mth.groupby('collected')
@@ -56,8 +57,8 @@ for x in range(len(keys) - 1):
 
         delta_contract = inner[inner.apply(lambda x: x['contrac_x'] != x['contrac_y'], axis=1)]
         delta_contract = delta_contract.drop(
-            columns=['tech_dept_y', 'status_std_y', 'status_cnl_y', 'tech_dept_x', 'status_std_x',
-                     'status_cnl_x', 'collected_x', 'collected_y'])
+            columns=['tech_dept_y', 'status_std_y', 'tech_dept_x', 'status_std_x',
+                     'collected_x', 'collected_y'])
 
         delta_contract = pd.merge(delta_contract, assets, how='left', left_on='n_imma', right_on='asset_id')
 
@@ -100,8 +101,8 @@ for x in range(len(keys) - 1):
 
         added_contract = pd.merge(added_contract, assets, how='left', left_on='n_imma', right_on='asset_id')
         added_contract = added_contract.drop(columns=['collected_y', 'collected_x', 'n_imma', 'tech_dept_y',
-                                                      'contrac_y', 'status_std_y', 'status_cnl_y', 'tech_dept_x',
-                                                      'contrac_x', 'status_std_x', 'status_cnl_x'])
+                                                      'contrac_y', 'status_std_y', 'tech_dept_x',
+                                                      'contrac_x', 'status_std_x'])
 
         added_contract.sort_values('contract', inplace=True)
 
@@ -121,8 +122,7 @@ for x in range(len(keys) - 1):
         retired_contract = pd.merge(retired_contract, assets, how='left',
                                     left_on='n_imma', right_on='asset_id')
         retired_contract.drop(
-            columns=['collected_x', 'collected_y', 'n_imma', 'tech_dept_y', 'contrac_y', 'status_std_y', 'status_cnl_y',
-                     'tech_dept_x', 'contrac_x', 'status_std_x', 'status_cnl_x'], inplace=True)
+            columns=['collected_x', 'collected_y', 'n_imma', 'tech_dept_y', 'contrac_y', 'status_std_y', 'tech_dept_x', 'contrac_x', 'status_std_x'], inplace=True)
 
         retired_contract.sort_values('contract', inplace=True)
 

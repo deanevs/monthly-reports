@@ -17,11 +17,13 @@ do_excel = True
 NUM_MONTHS = 1
 
 # files and paths
-wdire = Path(r'C:\Users\212628255\Documents\2 GE\AssetPlus\Monthly Reports\new downloads')
+wdir = Path(r'C:\Users\212628255\Documents\2 GE\AssetPlus\Monthly Reports\new downloads')
 output_td = Path(r'C:\Users\212628255\Documents\2 GE\AssetPlus\Monthly Reports\Tech Dept Changes')
 output_con = Path(r'C:\Users\212628255\Documents\2 GE\AssetPlus\Monthly Reports\Contracts Changes')
-assets = pd.read_csv((wdire / 'INFOASSETSRETIREDAFTER2015.csv'))  # , parse_dates=True)
-mth = pd.read_csv((wdire / 'monthly_pm_status.csv'))  # ,parse_dates=True)
+assets = pd.read_csv((wdir / 'INFOASSETSRETIREDAFTER2015.csv'), on_bad_lines='skip')  # , parse_dates=True)
+mth = pd.read_csv((wdir / 'monthly_pm_status.csv'))  # ,parse_dates=True)
+
+mth.drop(columns=['DELTA'], inplace=True)
 
 mth.collected = pd.to_datetime(mth.collected)
 grp = mth.groupby('collected')
@@ -30,7 +32,6 @@ keys.sort(reverse=True)
 
 # stores dict values from each month to create dataframe
 rows_list = []
-
 
 def column_widths(df, sheet_name, writer):
     for column in df:
@@ -65,8 +66,7 @@ for x in range(len(keys) - 1):
         # delta_con = inner[inner.apply(lambda x: x['contrac_x'] != x['contrac_y'], axis=1)]
 
         # drop columns of no interest
-        delta_td = delta_td.drop(
-            columns=['contrac_x', 'status_std_x', 'status_cnl_x', 'contrac_y', 'status_std_y', 'status_cnl_y'], axis=1)
+        delta_td = delta_td.drop(columns=['contrac_x', 'status_std_x', 'contrac_y', 'status_std_y'], axis=1)
         # merge to get asset information
         delta_td = pd.merge(delta_td, assets, how='left', left_on='n_imma', right_on='asset_id')
 
@@ -111,8 +111,7 @@ for x in range(len(keys) - 1):
         added_td = pd.merge(added_td, assets, how='left',
                             left_on='n_imma', right_on='asset_id')
         added_td = added_td.drop(
-            columns=['collected_y', 'collected_x', 'n_imma', 'tech_dept_y', 'contrac_y', 'status_std_y', 'status_cnl_y',
-                     'tech_dept_x', 'contrac_x', 'status_std_x', 'status_cnl_x'])
+            columns=['collected_y', 'collected_x', 'n_imma', 'tech_dept_y', 'contrac_y', 'status_std_y', 'tech_dept_x', 'contrac_x', 'status_std_x'])
 
         added_td.fillna(value='', inplace=True)
         added_td.sort_values('tech_dept', inplace=True)
@@ -131,8 +130,7 @@ for x in range(len(keys) - 1):
         retired_td = pd.merge(retired_td, assets, how='left',
                               left_on='n_imma', right_on='asset_id')
         retired_td.drop(
-            columns=['collected_x', 'collected_y', 'n_imma', 'tech_dept_y', 'contrac_y', 'status_std_y', 'status_cnl_y',
-                     'tech_dept_x', 'contrac_x', 'status_std_x', 'status_cnl_x'], inplace=True)
+            columns=['collected_x', 'collected_y', 'n_imma', 'tech_dept_y', 'contrac_y', 'status_std_y', 'tech_dept_x', 'contrac_x', 'status_std_x'], inplace=True)
 
         retired_td.fillna(value='', inplace=True)
         retired_td.sort_values('tech_dept', inplace=True)

@@ -2,21 +2,20 @@ import pandas as pd
 import datetime
 from pandas.tseries.offsets import MonthEnd
 import sys
-
-sys.path.insert(0, 'C:\\Users\\212628255\\PycharmProjects\\interfaces\\smartsheet_interface')
-import ss_interface
 import settings
 import charting
 import availability
 import time_to_repair
 import acceptance
 import overviews
+sys.path.insert(0, 'C:\\Users\\212628255\\Documents\\PycharmProjects\\interfaces\\smartsheet_interface')
+import ss_interface
 
 pd.options.display.max_columns = None
 pd.options.display.max_rows = None  # displays all rows ... change None to 100 ow whatever number
 pd.options.display.width = 1000
 
-connect_ss = True
+connect_ss = False
 
 
 def main():
@@ -94,7 +93,7 @@ def main():
     mth = pd.read_csv((settings.wdir / 'monthly_pm_status.csv'))
     mth = mth[mth.tech_dept != 'ASSET ONLY'].copy()  # this stopped from Nov22
     mth['month_end'] = pd.to_datetime(mth.collected) + MonthEnd(0)
-    mth.drop(columns=['status_cnl', 'tech_dept'], inplace=True)
+    mth.drop(columns=['tech_dept'], inplace=True)
 
     print(f"Shape = {mth.shape}")
     print(mth.head())

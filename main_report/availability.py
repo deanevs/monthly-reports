@@ -5,7 +5,7 @@ import settings
 import helper
 import sys
 
-sys.path.insert(0, 'C:\\Users\\212628255\\PycharmProjects\\interfaces\\WorkDays')
+sys.path.insert(0, 'C:\\Users\\212628255\\Documents\\PycharmProjects\\interfaces\\WorkDays')
 import workdays as wds
 
 HOURS_PER_WORKDAY = 10
@@ -16,13 +16,12 @@ def do_availability(merged, keys, corr, dest_filename):
     """Orchestrates the different availability analysis"""
     print("Doing System Availability ..... ")
 
-    # *****************************************
-    mri = ('MRI', ['37654'])
-    xray = ('X-Ray', ['37672', '17904', '37646', '37645', '37647', '37679', '37661',
+    MRI = ('MRI', ['37654'])
+    XRAY = ('X-Ray', ['37672', '17904', '37646', '37645', '37647', '37679', '37661',
                       '42280', '37623', '37626', '40866', '38400', '37667'])
-    ct = ('CT Scanners', ['37618', '45143', '45016'])
+    CT = ('CT Scanners', ['37618', '45143', '45016'])
 
-    gmdn_list = [ct, mri, xray]
+    gmdn_list = [CT, MRI, XRAY]
     filename = helper.set_filename('AVAILABILITY_MRI_CT_XRAY')
     stats = _calc_gmdn_availability(gmdn_list, merged, corr, keys, filename)
     print(stats)

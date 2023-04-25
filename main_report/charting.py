@@ -44,8 +44,8 @@ def do_pm_compliance(merged, keys, dest_filename):
         # create pm charts
         data = merged[(merged.contract.isin(settings.GE_CONTRACTS))]          # contract
         filename = helper.set_filename('PM_COMPLIANCE_GE_CONTRACTS')
-        title =  'GE CONTRACTS'
-        result = calc_single_chart(data, keys, title, filename)
+        title = 'GE CONTRACTS'
+        result = calc_single_chart(data, keys, 'GE CONTRACTS', filename)
         pm_results.append(result)
         lates = report_columns(data)
         lates.to_excel(writer, sheet_name=title, index=False)
@@ -136,6 +136,7 @@ def do_pm_compliance(merged, keys, dest_filename):
 # PM COMPLIANCE TRENDS
 # ************************************************************************************************************
 
+
 def do_pm_trends(merged):
 
         # GE TECH DEPTS
@@ -199,7 +200,8 @@ def do_chart(df_prop, df):
                 pass
     # NO RETURN
 
-def calc_single_chart(data, keys, title, out_filename):
+
+def calc_single_chart(data, keys, in_title, out_filename):
     print(f"Number of assets = {len(data)}")
 
     cross_tab_prop = pd.crosstab(index=data['risk'],
@@ -219,7 +221,7 @@ def calc_single_chart(data, keys, title, out_filename):
     plt.ylabel("Risks")
     plt.xlabel("Percentage Compliance")
     # plt.set_title(title)
-    plt.title(title)
+    plt.title(in_title)
     plt.legend(loc="lower left", ncol=2)
 
     plt.savefig((settings.output / out_filename))
@@ -233,7 +235,7 @@ def calc_single_chart(data, keys, title, out_filename):
     # do monthly stats
     dic_tech_dept_results = {}
     dic_tech_dept_results.update({'month': keys[0].date(),
-                  'Group': title,
+                  'Group': in_title,
                   '#assets': len(data),
                   'HIGH': cross_tab_prop.loc['HIGH', 'IN DATE'],
                   'MEDIUM': cross_tab_prop.loc['MEDIUM', 'IN DATE'],
@@ -255,6 +257,9 @@ def calc_division(data, keys, title, out_filename):
 
     temp_results_list = []
 
+    # debug
+    # data.to_excel("data.xlsx")
+
     # loop through the length of tickers and keep track of index
     for n, div in enumerate(settings.DIVISIONS):
         # add a new subplot iteratively using nrows and cols
@@ -271,30 +276,34 @@ def calc_division(data, keys, title, out_filename):
         cross_tab = pd.crosstab(index=df['risk'],
                                 columns=df['status_std']).reindex(settings.risk_order)
 
-        cross_tab_prop.plot(kind='barh',
+        try:
+            cross_tab_prop.plot(kind='barh',
                             ax=ax,
                             stacked=True,
                             # colormap='tab10',
                             color=['c', 'orange'],
                             figsize=(25, 18))
 
-        do_chart(cross_tab_prop, cross_tab)
 
-        # chart formatting
-        ax.set_title(div.upper())
-        ax.get_legend().remove()
-        ax.set_xlabel("")
+            do_chart(cross_tab_prop, cross_tab)
 
-        # do monthly stats
-        dict_temp = {}
-        dict_temp.update({'month': keys[0].date(),
-                      'Group': div,
-                      '#assets': len(df),
-                      'HIGH': cross_tab_prop.loc['HIGH', 'IN DATE'],
-                      'MEDIUM': cross_tab_prop.loc['MEDIUM', 'IN DATE'],
-                      'LOW': cross_tab_prop.loc['LOW', 'IN DATE']})
+            # chart formatting
+            ax.set_title(div.upper())
+            ax.get_legend().remove()
+            ax.set_xlabel("")
 
-        temp_results_list.append(dict_temp)
+            # do monthly stats
+            dict_temp = {}
+            dict_temp.update({'month': keys[0].date(),
+                          'Group': div,
+                          '#assets': len(df),
+                          'HIGH': cross_tab_prop.loc['HIGH', 'IN DATE'],
+                          'MEDIUM': cross_tab_prop.loc['MEDIUM', 'IN DATE'],
+                          'LOW': cross_tab_prop.loc['LOW', 'IN DATE']})
+
+            temp_results_list.append(dict_temp)
+        except:
+            print(f"ERROR: enumerate {n}, division {div}")
 
     plt.savefig((settings.output / out_filename))
     print(f"Saved {out_filename}")

@@ -18,7 +18,8 @@ def do_overviews(assets, mth, keys):
     filename = helper.set_filename("OVERVIEW_TREND_ADDED-RETIRED")
     title = 'ADDED/RETIRED ASSETS PER MONTH'
     legend = ['Added', 'Retired']
-    create_hist(df_stats[['added_num', 'retired_num']], title, legend, filename)
+    # create_hist(df_stats[['added_num', 'retired_num']], title, legend, filename)
+    create_trend(df_stats[['added_num', 'retired_num']], title, legend, filename)
 
     filename = helper.set_filename("OVERVIEW_TREND_TOTAL_COST_ALL_ASSETS")
     title = 'TOTAL COST OF ASSETS PER MONTH'

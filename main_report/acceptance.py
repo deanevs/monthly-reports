@@ -50,7 +50,7 @@ def calc_spec(x):
 def get_accept(df_assets, mth_num=0):
     # create dataframe
     wo = pd.read_csv((settings.wdir / 'acceptance.csv'))
-    wo.drop(columns=['serial', 'model', 'manufacturer', 'gmdn_no', 'equip', 'dept', 'site'], inplace=True)
+    # wo.drop(columns=['serial', 'model', 'manufacturer', 'gmdn_no', 'equip', 'dept', 'site'], inplace=True)
     wo.end_date = pd.to_datetime(wo.end_date)
     wo['month'] = wo.end_date.dt.month
 
