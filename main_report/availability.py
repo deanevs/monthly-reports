@@ -15,7 +15,7 @@ MINS_PER_HOUR = 60
 def do_availability(merged, keys, corr, dest_filename):
     """Orchestrates the different availability analysis"""
     print("Doing System Availability ..... ")
-
+    # define the tuples for group names and GMDNs
     MRI = ('MRI', ['37654'])
     XRAY = ('X-Ray', ['37672', '17904', '37646', '37645', '37647', '37679', '37661',
                       '42280', '37623', '37626', '40866', '38400', '37667'])
@@ -65,7 +65,8 @@ def _calc_gmdn_availability(gmdn_list, merged, corr, keys, out_filename, no_mont
         merged_mth = merged.loc[merged.collected == keys[n]]
         curr_corr = corr.loc[(corr.month_end_corr == keys[n])]
 
-        dict1 = {}  # empty dictionary to create dataframe
+        # declare empty dictionary to create dataframe
+        dict1 = {}
 
         for gmdn in gmdn_list:
             print('\n')
@@ -76,15 +77,16 @@ def _calc_gmdn_availability(gmdn_list, merged, corr, keys, out_filename, no_mont
 
             gmdn_cnt = int(len(df_gmdn))
 
-            df_sd = pd.merge(df_gmdn, curr_corr, how='inner', left_on='n_imma', right_on='Asset ID')
-            df_sd.drop(columns=['n_imma', 'status_std', 'month_end', 'md', 'origin', 'name', 'serial', 'price',
+            df_sd = pd.merge(df_gmdn, curr_corr, how='inner', left_on='n_imma', right_on='NU_IMM')
+            print(df_sd.head())
+            df_sd.drop(columns=['n_imma', 'status_std', 'DELTA', 'month_end', 'md', 'origin', 'name', 'serial', 'price',
                                 'replacement', 'tech_dept', 'contract', 'eol', 'last_wo', 'division', 'retired',
-                                'retire_reason', 'received', 'po', 'Asset ID', 'Contract'], inplace=True)
+                                'retire_reason', 'received', 'po', 'NU_IMM', 'N_MARCHE'], inplace=True)
 
-            if len(df_sd[df_sd['System Down (Days)'] > 0]) > 0:
-                print(df_sd[df_sd['System Down (Days)'] > 0].sort_values('System Down (Days)', ascending=False))
+            if len(df_sd[df_sd['SYSTEM_DOWN'] > 0]) > 0:
+                print(df_sd[df_sd['SYSTEM_DOWN'] > 0].sort_values('SYSTEM_DOWN', ascending=False))
 
-            total_sd = round(df_sd['System Down (Days)'].sum(), 2)
+            total_sd = round(df_sd['SYSTEM_DOWN'].sum(), 2)
             avail = round(_availability_formulae(total_sd, gmdn_cnt, month_days), 2)
             print(f"{gmdn[0]} Availability = {avail}%")
 
@@ -164,19 +166,19 @@ def _calc_availability_fully_comp(merged, keys, corr, out_filename, title, no_mo
         print(f"Imaging + Biomed = {len(curr_mon_ge_contract)}")
 
         # merge filtered FULLY COMP with correctives
-        df_sd = pd.merge(curr_mon_ge_contract, corr, how='inner', left_on='n_imma', right_on='Asset ID')
+        df_sd = pd.merge(curr_mon_ge_contract, corr, how='inner', left_on='n_imma', right_on='NU_IMM')
         print(f"Number in merged corrective = {len(df_sd)}")
         df_sd.drop(columns=['n_imma', 'status_std', 'month_end', 'md', 'origin', 'name', 'serial', 'price',
                             'replacement', 'tech_dept', 'contract', 'eol', 'last_wo', 'division', 'retired',
-                            'retire_reason', 'received', 'po', 'Asset ID', 'Contract'], inplace=True)
+                            'retire_reason', 'received', 'po', 'NU_IMM', 'N_MARCHE'], inplace=True)
 
-        imaging = df_sd[(df_sd['Tech Dept (WO)'].isin(settings.IMAGING)) &
+        imaging = df_sd[(df_sd['INT_CM'].isin(settings.IMAGING)) &
                                                  (df_sd.month_end_corr.dt.year == year) &
                                                  (df_sd.month_end_corr.dt.month == month)]
 
         print(imaging.head())
 
-        img_sd_days = round(imaging['System Down (Days)'].sum(), 2)
+        img_sd_days = round(imaging['SYSTEM_DOWN'].sum(), 2)
 
         avail_imaging = round(_availability_formulae(img_sd_days, imaging_cnt, month_days), 2)
 
@@ -184,16 +186,16 @@ def _calc_availability_fully_comp(merged, keys, corr, out_filename, title, no_mo
         # bio_sd_days = round(corr[((corr['Tech Dept (Now)'].isin(settings.BIOMED)) &
         #                               (corr['Job End Month'] == legend) &
         #                               corr['Contract'].str.contains('MMS FULLY COMP', na=False, regex=False))][
-        #                             'System Down (Days)'].sum(), 2)
+        #                             'SYSTEM_DOWN'].sum(), 2)
 
 
-        biomed = df_sd[(df_sd['Tech Dept (WO)'].isin(settings.BIOMED)) &
+        biomed = df_sd[(df_sd['INT_CM'].isin(settings.BIOMED)) &
                                                  (df_sd.month_end_corr.dt.year == year) &
                                                  (df_sd.month_end_corr.dt.month == month)]
 
         print(biomed.head())
 
-        bio_sd_days = round(biomed['System Down (Days)'].sum(), 2)
+        bio_sd_days = round(biomed['SYSTEM_DOWN'].sum(), 2)
 
         avail_biomed = round(_availability_formulae(bio_sd_days, biomed_cnt, month_days), 2)
 

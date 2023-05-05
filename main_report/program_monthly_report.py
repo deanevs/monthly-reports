@@ -8,81 +8,32 @@ import availability
 import time_to_repair
 import acceptance
 import overviews
-sys.path.insert(0, 'C:\\Users\\212628255\\Documents\\PycharmProjects\\interfaces\\smartsheet_interface')
-import ss_interface
 
 pd.options.display.max_columns = None
 pd.options.display.max_rows = None  # displays all rows ... change None to 100 ow whatever number
 pd.options.display.width = 1000
 
-connect_ss = False
-
 
 def main():
     # load dataframes
-    if settings.do_availability or settings.do_time_to_repair or 1:
-        print('Loading correctives ...')
-        if connect_ss:
-            corr22 = ss_interface.Sheet(settings.smartsheet_token, settings.CORRECTIVE2022).get_df()
-            corr22['WO Number'] = corr22['WO Number'].astype(int)
-            corr23 = ss_interface.Sheet(settings.smartsheet_token, settings.CORRECTIVE2023).get_df()
-            corr23['WO Number'] = corr23['WO Number'].astype(int)
-            corr = pd.concat([corr22, corr23])
-            corr.to_excel((settings.wdir / 'correctives.xlsx'), index=False)
-            del corr22, corr23
-        else:
-            corr = pd.read_excel((settings.wdir / 'correctives.xlsx'))
+    print('Loading correctives ...')
+    corr = pd.read_csv((settings.wdir / 'correctives.csv'))
+    corr = corr.fillna('')
+    # add column for last of month for date end month
+    corr['month_end_corr'] = pd.to_datetime(corr.DA_FIN, dayfirst=True) + MonthEnd(1)
 
-        print(corr.head())
-
-        def clean_asset_id(a):
-            """Ensures all are strings """
-            if isinstance(a, float):
-                result = str(int(a))
-                # print(f"float: {a, result}")
-                return result
-            elif isinstance(a, int):
-                return str(a)
-            elif isinstance(a, str):
-                if a[-2] == '.':
-                    result = a[:-2]
-                    # print(f"String: {a, result}")
-                    return result
-                else:
-                    return a
-            else:
-                print(f"MISSED ALL is {type(a)}")
-
-        # clean up df
-        corr['month_end_corr'] = pd.to_datetime(corr['Job End Date']) + MonthEnd(
-            1)  # converts to last day of month eg 2022-10-31
-        corr['WO Number'] = corr['WO Number'].fillna(0)
-        corr['WO Number'] = corr['WO Number'].astype(int)
-        corr['Asset ID'] = corr['Asset ID'].apply(clean_asset_id)
-        corr['Analyzed Date'] = pd.to_datetime(corr['Analyzed Date'])
-
-        corr.drop(columns=['row_id', 'parent_id', 'Description', 'Site', 'Tech Dept (Now)', 'Risk',
-                           'Technical Comments', 'Reporting Error', 'Verify'],
-                  inplace=True)
-
-        print(f"Shape = {corr.shape}")
-        print(corr.head(20))
-        print('\n')
+    print(f"Correctives shape = {corr.shape}")
+    print(corr.head(20))
+    print('\n')
 
     # main assets
     print('Loading assets i.e. how they are now! ....')
-    assets = pd.read_csv((settings.wdir / 'INFOASSETSRETIREDAFTER2015.csv'))
+    assets = pd.read_csv((settings.wdir / 'infoassetsretiredafter2015.csv'))
+    # format next pm date from 20230315.0
+    assets.next_pm = pd.to_datetime(assets.next_pm, errors='ignore', format="%Y%m%d")
+
     assets = assets.fillna('')
     assets.risk = assets.risk.apply(convert_risk)
-    assets.asset_id = assets.asset_id.astype(str)
-
-    # next pm tidy up from mix of NaN and 20210511.0
-    def pm_date_convert(s):
-        if isinstance(s, float):
-            s = str(s)
-            return s[:4] + '-' + s[4:6] + '-' + s[6:8]
-
-    assets.next_pm = assets.next_pm.apply(pm_date_convert)
 
     print(f"Shape = {assets.shape}")
     print(assets.head())
@@ -122,7 +73,7 @@ def main():
     last_mth = merged.loc[merged.collected == keys[0]]
     last_mth.drop(columns=[])
 
-    print(f"Shape = {last_mth.shape}")
+    print(f"Last month shape = {last_mth.shape}")
     print(last_mth.head())
     print('\n')
 

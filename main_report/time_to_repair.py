@@ -23,19 +23,19 @@ def calc_time_to_repair(mth, keys, corr, title, out_filename):
     month = keys[0].month
     alpha_month = keys[0].strftime("%B")
 
-    corr_mth = corr[(corr['Job End Month'] == alpha_month) & (corr['Analyzed Date'].dt.year == year)].copy()
-    corr_mth.Penalty = corr_mth.Penalty.astype(int)
+    corr_mth = corr[corr['month_end_corr'] == keys[0]].copy()
+    corr_mth.Penalty = corr_mth.PENALTY.astype(int)
 
     # corr_mth.to_excel("corr_mth.xlsx")
 
-    df_penalties = corr_mth[corr_mth['Penalty'] > 0]
+    df_penalties = corr_mth[corr_mth['PENALTY'] > 0]
     # df_penalties.to_excel("df_penalties.xlsx")
 
-    penalty_sum = df_penalties.Penalty.sum()
+    penalty_sum = df_penalties.PENALTY.sum()
 
     print(f"Total penalties = £{penalty_sum}")
 
-    df_penalties.Penalty.value_counts().plot(kind='bar', figsize=(12, 8), title=title, ylabel='£', fontsize=16)
+    df_penalties.PENALTY.value_counts().plot(kind='bar', figsize=(12, 8), title=title, ylabel='£', fontsize=16)
 
     plt.savefig((settings.output / out_filename))
 
